@@ -11,10 +11,16 @@ async def page(client: Client):
         'title': False,
         'chart': {'type': 'networkgraph', 'marginTop':80},
         'plotOptions':{'networkgraph': {"keys":['from', 'to']}},
+        'tooltip': {
+            'enabled': True,
+            'format': "<a href='/info/{point.id}'>More Info</a>",
+            'useHTML': True,
+            'style': {"pointerEvents": "auto", 'fontSize': '20px'}
+        },
         'series':[{
             'link':{'linkLength':200},
             'layoutAlgorithm':{'enableSimulation': True, 'integration':'euler', 'linkLength':"50"},
-            'dataLabels':{'enabled':True, 'linkFormat':'','allowOverlap':True, 'style':{'fontSize':'20px', 'textOutline':False}},
+            'dataLabels':{'enabled':True ,'linkFormat':'','allowOverlap':True, 'style':{'fontSize':'20px', 'textOutline':False}},
             'marker':{'radius':50},
             "data": [
             ],
@@ -143,4 +149,27 @@ async def page(client: Client):
             ui.label("Export Map")
             ui.button("Download", on_click=lambda: ui.download("/save"))
 
+
+
+
+        
+    await ui.run_javascript('''
+        const chart = getElement(''' + str(chart.id) + ''').chart;
+        chart.update({
+        series: {
+        point: {
+        events: {
+        click: function(){
+        console.log("test")
+                }
+            }
+        },
+        } 
+        })
+                                ''', respond=False)
+
+
+@ui.page('/info/{node_id}')
+def icons(node_id: str):
+    ui.label(node_id).classes('text-h3')
 ui.run()
